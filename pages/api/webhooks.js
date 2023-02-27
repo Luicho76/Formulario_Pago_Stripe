@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-// Stripe requires the raw body to construct the event.
+// Stripe requiere el raw del body para construir el evento
 export const config = {
   api: {
     bodyParser: false,
@@ -30,13 +30,13 @@ const webhookHandler = async (req, res) => {
         webhookSecret
       );
     } catch (err) {
-      // On error, log and return the error message.
+       // En caso de error, se inicia sesión y devuelve el mensaje de error
       console.log(`❌ Error message: ${err.message}`);
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
 
-    // Successfully constructed event.
+    // Evento construido con éxito
     console.log('✅ Success:', event.id);
 
     switch (event.type) {
@@ -63,7 +63,7 @@ const webhookHandler = async (req, res) => {
       }
     }
 
-    // Return a response to acknowledge receipt of the event.
+    // Return una respuesta para acusar recibo del evento.
     res.json({ received: true });
   } else {
     res.setHeader('Allow', 'POST');

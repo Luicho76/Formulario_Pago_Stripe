@@ -30,16 +30,16 @@ export default function CheckoutForm() {
     stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
       switch (paymentIntent.status) {
         case "succeeded":
-          setMessage("Payment succeeded!");
+          setMessage("Pago Exitoso!!!");
           break;
         case "processing":
-          setMessage("Your payment is processing.");
+          setMessage("YSu pago se esta procesando");
           break;
         case "requires_payment_method":
-          setMessage("Your payment was not successful, please try again.");
+          setMessage("Su pago no fue exitoso, intentelo de nuevo");
           break;
         default:
-          setMessage("Something went wrong.");
+          setMessage("Algo salio mal");
           break;
       }
     });
@@ -49,8 +49,8 @@ export default function CheckoutForm() {
     e.preventDefault();
 
     if (!stripe || !elements) {
-      // Stripe.js aún no se ha cargado.
-      // Asegúrese de deshabilitar el envío de formularios hasta que se haya cargado Stripe.js.
+      // Stripe.js aun no se ha cargado.
+      // Debemos asegurarnos de desahilitar el formulario hasta que Stripe.js haya cargado.
       return;
     }
 
@@ -59,20 +59,18 @@ export default function CheckoutForm() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Esto se cambia a la página de finalización de pago
-        return_url: "https://star-link-sooty.vercel.app/",
+        // Aca se debe colocar la pagina final de pago - no entendi bien esto, no se si con el deploy ya esta o hay que usar la url de stripe
+        return_url: "https://star-link-sooty.vercel.app/", //como se haria para devolver a un componente?
       },
     });
 
-    // This point will only be reached if there is an immediate error when
-    // confirming the payment. Otherwise, your customer will be redirected to
-    // your `return_url`. For some payment methods like iDEAL, your customer will
-    // be redirected to an intermediate site first to authorize the payment, then
-    // redirected to the `return_url`.
+    /* 
+    Lo siguiente solo se ejecutara si hay un error inmediato al confirmar el pago, de lo contrario el cliente sera redirigido a la return_url, Lo ideal es que el cliente primero pase a un sitio intermedio para autorizar el pago y luego a la return_url
+    */
     if (error.type === "card_error" || error.type === "validation_error") {
       setMessage(error.message);
     } else {
-      setMessage("An unexpected error occurred.");
+      setMessage("Ocurrio un error inesperado");
     }
 
     setIsLoading(false);
@@ -94,7 +92,7 @@ export default function CheckoutForm() {
           {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
         </span>
       </button>
-      {/* Show any error or success messages */}
+      {/* mostrar cualquier mensaje de error o exito */}
       {message && <div id="payment-message">{message}</div>}
     </form>
   );
